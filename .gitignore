@@ -1,0 +1,10 @@
+node_modules
+src
+package-lock.json
+package.json
+web-ext-config.cjs
+webpack.config.js
+options.js
+options.html
+styles.css
+*.zip

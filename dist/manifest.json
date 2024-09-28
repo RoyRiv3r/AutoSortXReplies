@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "AutoSortXReplies",
+  "version": "1.5.1",
+  "author": "RoyRiv3r",
+  "description": "Automatically saves and sorts Twitter|X replies based on your preferred criteria (Most Relevant, Liked, or Recent).",
+  "permissions": ["webRequest", "webRequestBlocking", "*://x.com/*", "storage"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://x.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "images/icon16.png",
+    "32": "images/icon32.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
+}
