@@ -47,6 +47,34 @@ function modifyQueryString(url) {
   }
 }
 
+// Function to check if the request is the target operation
+function isTargetRequest(url) {
+  try {
+    let urlObj = new URL(url);
+    let pathname = urlObj.pathname;
+
+    // Match URLs with pattern: /i/api/graphql/<22-character-code>/TweetDetail
+    let match = pathname.match(
+      /^\/i\/api\/graphql\/([A-Za-z0-9_-]{22})\/TweetDetail$/
+    );
+
+    if (match) {
+      let params = urlObj.searchParams;
+      if (params.has("variables")) {
+        let variables = JSON.parse(decodeURIComponent(params.get("variables")));
+
+        // Check if 'rankingMode' exists in variables
+        if ("rankingMode" in variables) {
+          return true;
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error parsing URL:", e);
+  }
+  return false;
+}
+
 browser.webRequest.onBeforeRequest.addListener(
   function (details) {
     debugLog(`Intercepted request: ${details.url}`);
@@ -56,9 +84,7 @@ browser.webRequest.onBeforeRequest.addListener(
       return {};
     }
 
-    const targetPattern = "https://x.com/i/api/graphql/QuBlQ6SxNAQCt6-kBiCXCQ/";
-
-    if (details.url.startsWith(targetPattern)) {
+    if (isTargetRequest(details.url)) {
       const modifiedUrl = modifyQueryString(details.url);
       if (modifiedUrl !== details.url) {
         debugLog(`Redirecting to modified URL: ${modifiedUrl}`);
@@ -68,7 +94,12 @@ browser.webRequest.onBeforeRequest.addListener(
 
     return {};
   },
-  { urls: ["*://x.com/i/api/graphql/QuBlQ6SxNAQCt6-kBiCXCQ/*"] },
+  {
+    urls: [
+      "*://x.com/i/api/graphql/*/TweetDetail*",
+      "*://mobile.x.com/i/api/graphql/*/TweetDetail*",
+    ],
+  },
   ["blocking"]
 );
 
